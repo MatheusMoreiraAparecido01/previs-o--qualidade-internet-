@@ -27,10 +27,19 @@
             color: #1769aa;
         }
 
+        label {
+            display: block;
+            width: 90%;
+            margin: 10px auto 0;
+            text-align: left;
+            font-size: 14px;
+            color: #333;
+        }
+
         input, button {
             width: 90%;
             padding: 12px;
-            margin: 8px 0;
+            margin: 4px 0 8px;
             border-radius: 6px;
             box-sizing: border-box;
         }
@@ -44,11 +53,17 @@
             color: white;
             background: #1769aa;
             cursor: pointer;
+            margin-top: 14px;
+        }
+
+        button:hover {
+            background: #12558a;
         }
 
         #resultado {
             font-weight: bold;
             margin-top: 20px;
+            font-size: 18px;
         }
     </style>
 </head>
@@ -63,17 +78,20 @@
         </p>
 
         <form id="formulario">
+            <label for="download">Download (Mbps)</label>
             <input id="download" type="number"
                 min="0" step="any"
-                placeholder="Download (Mbps)" required>
+                placeholder="Ex.: 100" required>
 
+            <label for="upload">Upload (Mbps)</label>
             <input id="upload" type="number"
                 min="0" step="any"
-                placeholder="Upload (Mbps)" required>
+                placeholder="Ex.: 20" required>
 
+            <label for="ping">Ping (ms)</label>
             <input id="ping" type="number"
                 min="0" step="any"
-                placeholder="Ping (ms)" required>
+                placeholder="Ex.: 25" required>
 
             <button type="submit">Avaliar conexão</button>
         </form>
@@ -87,33 +105,45 @@
     </div>
 
     <script>
+        function classificarConexao(download, upload, ping) {
+            if (download >= 100 && upload >= 20 && ping <= 30) {
+                return "Excelente";
+            } else if (download >= 30 && upload >= 5 && ping <= 60) {
+                return "Boa";
+            } else if (download >= 10 && ping <= 100) {
+                return "Regular";
+            }
+            return "Ruim";
+        }
+
+        const cores = {
+            "Excelente": "green",
+            "Boa": "#2e7d32",
+            "Regular": "orange",
+            "Ruim": "red"
+        };
+
         document.getElementById("formulario")
-            .addEventListener("submit", function(event) {
+            .addEventListener("submit", function (event) {
                 event.preventDefault();
 
-                const download =
-                    Number(document.getElementById("download").value);
-                const upload =
-                    Number(document.getElementById("upload").value);
-                const ping =
-                    Number(document.getElementById("ping").value);
+                const resultado = document.getElementById("resultado");
 
-                let qualidade;
+                const download = Number(document.getElementById("download").value);
+                const upload = Number(document.getElementById("upload").value);
+                const ping = Number(document.getElementById("ping").value);
 
-                if (download >= 100 && upload >= 20 && ping <= 30) {
-                    qualidade = "Excelente";
-                } else if (
-                    download >= 30 && upload >= 5 && ping <= 60
-                ) {
-                    qualidade = "Boa";
-                } else if (download >= 10 && ping <= 100) {
-                    qualidade = "Regular";
-                } else {
-                    qualidade = "Ruim";
+                if (isNaN(download) || isNaN(upload) || isNaN(ping) ||
+                    download < 0 || upload < 0 || ping < 0) {
+                    resultado.style.color = "red";
+                    resultado.textContent = "Informe valores válidos.";
+                    return;
                 }
 
-                document.getElementById("resultado").textContent =
-                    "Qualidade estimada: " + qualidade;
+                const qualidade = classificarConexao(download, upload, ping);
+
+                resultado.style.color = cores[qualidade];
+                resultado.textContent = "Qualidade estimada: " + qualidade;
             });
     </script>
 </body>

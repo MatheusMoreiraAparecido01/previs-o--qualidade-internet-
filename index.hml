@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projeto - Qualidade da Internet</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #eef3f8;
+            margin: 0;
+            padding: 30px 15px;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 550px;
+            margin: auto;
+            padding: 25px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px #0002;
+        }
+
+        h1 {
+            color: #1769aa;
+        }
+
+        input, button {
+            width: 90%;
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
+
+        input {
+            border: 1px solid #aaa;
+        }
+
+        button {
+            border: none;
+            color: white;
+            background: #1769aa;
+            cursor: pointer;
+        }
+
+        #resultado {
+            font-weight: bold;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Qualidade da Internet</h1>
+
+        <p>
+            Projeto de análise e previsão da qualidade
+            da conexão com a internet.
+        </p>
+
+        <form id="formulario">
+            <input id="download" type="number"
+                min="0" step="any"
+                placeholder="Download (Mbps)" required>
+
+            <input id="upload" type="number"
+                min="0" step="any"
+                placeholder="Upload (Mbps)" required>
+
+            <input id="ping" type="number"
+                min="0" step="any"
+                placeholder="Ping (ms)" required>
+
+            <button type="submit">Avaliar conexão</button>
+        </form>
+
+        <p id="resultado"></p>
+
+        <p>
+            O objetivo é entender como a velocidade
+            e o tempo de resposta influenciam a conexão.
+        </p>
+    </div>
+
+    <script>
+        document.getElementById("formulario")
+            .addEventListener("submit", function(event) {
+                event.preventDefault();
+
+                const download =
+                    Number(document.getElementById("download").value);
+                const upload =
+                    Number(document.getElementById("upload").value);
+                const ping =
+                    Number(document.getElementById("ping").value);
+
+                let qualidade;
+
+                if (download >= 100 && upload >= 20 && ping <= 30) {
+                    qualidade = "Excelente";
+                } else if (
+                    download >= 30 && upload >= 5 && ping <= 60
+                ) {
+                    qualidade = "Boa";
+                } else if (download >= 10 && ping <= 100) {
+                    qualidade = "Regular";
+                } else {
+                    qualidade = "Ruim";
+                }
+
+                document.getElementById("resultado").textContent =
+                    "Qualidade estimada: " + qualidade;
+            });
+    </script>
+</body>
+</html>

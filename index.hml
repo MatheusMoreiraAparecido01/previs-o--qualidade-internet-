@@ -3,61 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Projeto - Qualidade da Internet</title>
+    <title>Qualidade da Internet</title>
 
     <style>
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             font-family: Arial, sans-serif;
-            background: #eef3f8;
+            background-color: #eef3f8;
             margin: 0;
             padding: 30px 15px;
             text-align: center;
         }
 
         .container {
+            width: 100%;
             max-width: 550px;
-            margin: auto;
+            margin: 0 auto;
             padding: 25px;
-            background: white;
+            background-color: #ffffff;
             border-radius: 12px;
-            box-shadow: 0 4px 12px #0002;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
         }
 
         h1 {
             color: #1769aa;
         }
 
-        label {
-            display: block;
-            width: 90%;
-            margin: 10px auto 0;
-            text-align: left;
-            font-size: 14px;
-            color: #333;
+        p {
+            color: #333333;
+            line-height: 1.6;
         }
 
-        input, button {
-            width: 90%;
+        label {
+            display: block;
+            width: 100%;
+            margin: 12px auto 5px;
+            text-align: left;
+            font-size: 14px;
+            color: #333333;
+        }
+
+        input,
+        button {
+            display: block;
+            width: 100%;
             padding: 12px;
             margin: 4px 0 8px;
             border-radius: 6px;
-            box-sizing: border-box;
+            font-size: 16px;
         }
 
         input {
-            border: 1px solid #aaa;
+            border: 1px solid #aaaaaa;
+            background-color: #ffffff;
+            color: #222222;
+        }
+
+        input:focus {
+            outline: 2px solid #1769aa;
+            border-color: #1769aa;
         }
 
         button {
             border: none;
-            color: white;
-            background: #1769aa;
+            color: #ffffff;
+            background-color: #1769aa;
             cursor: pointer;
-            margin-top: 14px;
+            margin-top: 18px;
         }
 
         button:hover {
-            background: #12558a;
+            background-color: #12558a;
+        }
+
+        button:focus-visible {
+            outline: 3px solid #222222;
+            outline-offset: 3px;
         }
 
         #resultado {
@@ -65,57 +89,144 @@
             margin-top: 20px;
             font-size: 18px;
         }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 15px 10px;
+            }
+
+            .container {
+                padding: 20px 15px;
+            }
+
+            h1 {
+                font-size: 25px;
+            }
+        }
     </style>
 </head>
 
 <body>
-    <div class="container">
+    <main class="container">
         <h1>Qualidade da Internet</h1>
 
         <p>
-            Projeto de análise e previsão da qualidade
+            Projeto de análise da qualidade
             da conexão com a internet.
         </p>
 
         <form id="formulario">
             <label for="download">Download (Mbps)</label>
-            <input id="download" type="number"
-                min="0" step="any"
-                placeholder="Ex.: 100" required>
+            <input
+                id="download"
+                name="download"
+                type="number"
+                min="0"
+                step="any"
+                placeholder="Ex.: 100"
+                required
+            >
 
             <label for="upload">Upload (Mbps)</label>
-            <input id="upload" type="number"
-                min="0" step="any"
-                placeholder="Ex.: 20" required>
+            <input
+                id="upload"
+                name="upload"
+                type="number"
+                min="0"
+                step="any"
+                placeholder="Ex.: 20"
+                required
+            >
 
             <label for="ping">Ping (ms)</label>
-            <input id="ping" type="number"
-                min="0" step="any"
-                placeholder="Ex.: 25" required>
+            <input
+                id="ping"
+                name="ping"
+                type="number"
+                min="0"
+                step="any"
+                placeholder="Ex.: 25"
+                required
+            >
 
             <button type="submit">Avaliar conexão</button>
         </form>
 
-        <p id="resultado"></p>
+        <p id="resultado" role="status" aria-live="polite"></p>
 
         <p>
             O objetivo é entender como a velocidade
             e o tempo de resposta influenciam a conexão.
         </p>
-    </div>
+    </main>
 
     <script>
+        "use strict";
+
         function classificarConexao(download, upload, ping) {
             if (download >= 100 && upload >= 20 && ping <= 30) {
                 return "Excelente";
-            } else if (download >= 30 && upload >= 5 && ping <= 60) {
+            }
+
+            if (download >= 30 && upload >= 5 && ping <= 60) {
                 return "Boa";
-            } else if (download >= 10 && ping <= 100) {
+            }
+
+            if (download >= 10 && ping <= 100) {
                 return "Regular";
             }
+
             return "Ruim";
         }
 
+        const cores = {
+            Excelente: "#2e7d32",
+            Boa: "#2e7d32",
+            Regular: "#ed8b00",
+            Ruim: "#d32f2f"
+        };
+
+        const formulario = document.getElementById("formulario");
+        const resultado = document.getElementById("resultado");
+
+        formulario.addEventListener("submit", function (event) {
+            event.preventDefault();
+
+            const campoDownload = document.getElementById("download");
+            const campoUpload = document.getElementById("upload");
+            const campoPing = document.getElementById("ping");
+
+            const download = campoDownload.valueAsNumber;
+            const upload = campoUpload.valueAsNumber;
+            const ping = campoPing.valueAsNumber;
+
+            if (
+                !Number.isFinite(download) ||
+                !Number.isFinite(upload) ||
+                !Number.isFinite(ping) ||
+                download < 0 ||
+                upload < 0 ||
+                ping < 0
+            ) {
+                resultado.style.color = "#d32f2f";
+                resultado.textContent =
+                    "Erro: informe valores válidos e não negativos.";
+                return;
+            }
+
+            const qualidade = classificarConexao(
+                download,
+                upload,
+                ping
+            );
+
+            resultado.style.color = cores[qualidade];
+            resultado.textContent =
+                "Qualidade estimada: " + qualidade;
+        });
+    </script>
+</body>
+</html>
         const cores = {
             "Excelente": "green",
             "Boa": "#2e7d32",
